@@ -1,6 +1,7 @@
 import os
 import sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
+import json
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, jsonify
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -41,10 +42,20 @@ def initdb_command():
     """Initializes the database"""
     init_db()
     print('Initialized the database')
-    
+
 
 @app.teardown_appcontext
 def close_db(error):
     """Closes the database again at the end of the request."""
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
+
+
+@app.route("/")
+def hello():
+    if request.method == "GET":
+        username_from_post = request.args.get('username', 'default get')
+        return "GET request with username = %s" %username_from_post
+    elif request.method == "POST":
+        username_from_post = request.args.get('username', 'default post')
+        return "POST request with username = %s" % username_from_post

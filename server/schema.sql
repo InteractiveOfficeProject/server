@@ -1,41 +1,38 @@
-create table server.user (
+create table user (
     userId INTEGER PRIMARY KEY autoincrement,
-    email TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL,
-    firstName TEXT PRIMARY KEY NOT NULL,
-    lastName TEXT PRIMARY KEY NOT NULL,
-    profilePictureURL TEXT
+    email TEXT,
+    firstName TEXT NOT NULL,
+    lastName TEXT NOT NULL,
+    profilePictureURL TEXT //Datei hochladen? optional
 );
 
-create table server.activity (
+create table activity (
     activityId INTEGER PRIMARY KEY autoincrement,
     name TEXT NOT NULL,
-    maximumUsers INTEGER DEFAULT = 0
+    maximumUsers INTEGER DEFAULT = NULL
 );
 
-create table server.room (
+create table room (
     roomId INTEGER PRIMARY KEY autoincrement,
     name TEXT NOT NULL,
     maximumUsers INTEGER DEFAULT = 0
 );
 
-create table server.breakSeekerRequest (
-    breakId INTEGER PRIMARY KEY,
-    server.userId  INTEGER NOT NULL FOREIGN KEY,
-    joined TEXT NOT NULL,
+create table break (
+    breakId INTEGER PRIMARY KEY autoincrement,
+    created DATETIME DEFAULT TIMESTAMP,
     status TEXT NOT NULL,
-    activities BLOB NOT NULL
+    user INTEGER,
+    activity INTEGER,
+    room INTEGER,
+    FOREIGN KEY(user) REFERENCES user(userId),
+    FOREIGN KEY(activity) REFERENCES activity(activityId),
+    FOREIGN KEY(room) REFERENCES room(roomId),
 );
 
-create table server.breakMatch (
-    partners BLOB NOT NULL,
-    server.activityId INTEGER NOT NULL FOREIGN KEY,
-    server.roomId INTEGER NOT NULL FOREIGN KEY,
-    _timestamp CURRENT_TIMESTAMP
-);
-
-create table server.apiResponse (
-    code INTEGER NOT NULL,
-    type TEXT NOT NULL,
-    message TEXT NOT NULL
+create table participatesIn (
+    user INTEGER,
+    break INTEGER,
+    FOREIGN KEY(user) REFERENCES user(userId),
+    FOREIGN KEY(break) REFERENCES break(breakId)
 );
