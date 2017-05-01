@@ -59,3 +59,8 @@ def hello():
     elif request.method == "POST":
         username_from_post = request.args.get('username', 'default post')
         return "POST request with username = %s" % username_from_post
+
+
+if __name__ == '__main__':
+    init_db()
+    app.run()
