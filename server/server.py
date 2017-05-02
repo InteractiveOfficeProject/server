@@ -58,7 +58,7 @@ def hello():
     db = get_db()
     if request.method == "GET":
         username_from_post = request.args.get('username', 'default get')
-        return "GET request with username = %s" %username_from_post
+        return "GET request with username = %s" % username_from_post
     elif request.method == "POST":
         username_from_post = request.args.get('username', 'default post')
         return "POST request with username = %s" % username_from_post
@@ -84,6 +84,14 @@ def ping_request():
         # false -> return code 100
         cur = db.execute('select ')
     # else return error code 406
+
+
+@app.route("/signup", methods=['POST'])
+def signup_for_break():
+    db = get_db()
+    username = request.args.get('Username', 'default get')
+    activities = request.args.get('ActivityIDs', 'default get')
+    # create break here with sql command
 
 
 if __name__ == '__main__':
