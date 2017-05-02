@@ -2,20 +2,19 @@ create table user (
     userId INTEGER PRIMARY KEY autoincrement,
     email TEXT,
     firstName TEXT NOT NULL,
-    lastName TEXT NOT NULL,
-    profilePictureURL TEXT //Datei hochladen? optional
+    lastName TEXT NOT NULL
 );
 
 create table activity (
     activityId INTEGER PRIMARY KEY autoincrement,
     name TEXT NOT NULL,
-    maximumUsers INTEGER DEFAULT = NULL
+    maximumUsers INTEGER DEFAULT NULL
 );
 
 create table room (
     roomId INTEGER PRIMARY KEY autoincrement,
     name TEXT NOT NULL,
-    maximumUsers INTEGER DEFAULT = 0
+    maximumUsers INTEGER DEFAULT NULL
 );
 
 create table break (
@@ -27,7 +26,7 @@ create table break (
     room INTEGER,
     FOREIGN KEY(user) REFERENCES user(userId),
     FOREIGN KEY(activity) REFERENCES activity(activityId),
-    FOREIGN KEY(room) REFERENCES room(roomId),
+    FOREIGN KEY(room) REFERENCES room(roomId)
 );
 
 create table participatesIn (

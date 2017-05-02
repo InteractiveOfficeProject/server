@@ -14,6 +14,8 @@ app.config.update(dict(
     PASSWORD='default'
 ))
 
+break_queue = {}
+
 
 def connect_db():
     rv = sqlite3.connect(app.config['DATABASE'])
@@ -53,6 +55,7 @@ def close_db(error):
 
 @app.route("/")
 def hello():
+    db = get_db()
     if request.method == "GET":
         username_from_post = request.args.get('username', 'default get')
         return "GET request with username = %s" %username_from_post
@@ -61,6 +64,27 @@ def hello():
         return "POST request with username = %s" % username_from_post
 
 
+@app.route("/activities", methods=['GET'])
+def get_activities():
+    db = get_db()
+    cur = db.execute('select name, maximumUsers from activity order by activityId desc')
+    activities = cur.fetchall()
+    return jsonify(activities)
+
+
+@app.route("/ping", methods=['GET'])
+def ping_request():
+    db = get_db()
+    username = request.args.get('username', 'default get')
+    global break_queue
+    if break_queue.has_has(username):
+        # count number of people in queue with same activity, if >=2 return match found, remove user from queue
+        # elif activity.maximumUsers > 2
+        # true -> check if break with same activity in last 3 minutes was matched, join
+        # false -> return code 100
+        cur = db.execute('select ')
+    # else return error code 406
+
+
 if __name__ == '__main__':
-    init_db()
     app.run()
