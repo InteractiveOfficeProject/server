@@ -1,0 +1,4 @@
+build/
+server.egg-info/
+server/__pycache__/
+server/interactive_office.db
