@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import json
+import queue
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, jsonify
 
 app = Flask(__name__)
@@ -14,12 +15,17 @@ app.config.update(dict(
     PASSWORD='default'
 ))
 
-break_queue = {}
+break_queue = queue.Queue
+# each element: []
 
 
 def connect_db():
     rv = sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row
+    def make_dicts(cursor, row):
+        return dict((cursor.description[idx][0], value)
+                    for idx, value in enumerate(row))
+
+    rv.row_factory = make_dicts
     return rv
 
 
@@ -58,6 +64,11 @@ def hello():
     db = get_db()
     if request.method == "GET":
         username_from_post = request.args.get('username', 'default get')
+        sql_command = """INSERT INTO activity(name, maximumUsers) VALUES (?, ?)"""
+        values = ('hello', 5)
+        cur = db.execute(sql_command, values)
+        db.commit()
+        print(cur.lastrowid)
         return "GET request with username = %s" % username_from_post
     elif request.method == "POST":
         username_from_post = request.args.get('username', 'default post')
@@ -67,8 +78,9 @@ def hello():
 @app.route("/activities", methods=['GET'])
 def get_activities():
     db = get_db()
-    cur = db.execute('select name, maximumUsers from activity order by activityId desc')
+    cur = db.execute('select activityId, name, maximumUsers from activity order by activityId desc')
     activities = cur.fetchall()
+    print(activities)
     return jsonify(activities)
 
 
@@ -76,9 +88,16 @@ def get_activities():
 def ping_request():
     db = get_db()
     username = request.args.get('username', 'default get')
+    activity_counter = 0
     global break_queue
     if break_queue.has_has(username):
-        # count number of people in queue with same activity, if >=2 return match found, remove user from queue
+        activity = break_queue.get(username)[0]
+        for key, value in break_queue.items():
+            if value[0] == activity:
+                activity_counter += 1
+
+        # count number of people in queue with same activity & waiting, if >=2 return match found,
+        # - remove user from queue
         # elif activity.maximumUsers > 2
         # true -> check if break with same activity in last 3 minutes was matched, join
         # false -> return code 100
@@ -89,8 +108,12 @@ def ping_request():
 @app.route("/signup", methods=['POST'])
 def signup_for_break():
     db = get_db()
-    username = request.args.get('Username', 'default get')
+    userid = request.args.get('UserID', 'default get')
     activities = request.args.get('ActivityIDs', 'default get')
+    sql_command = """INSERT INTO break (user, activity, room) VALUES (?,?,?)"""
+    value = (userid, 0, 0)
+    cur = db.execute(sql_command, value)
+
     # create break here with sql command
 
 

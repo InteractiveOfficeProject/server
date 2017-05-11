@@ -20,7 +20,7 @@ create table room (
 create table break (
     breakId INTEGER PRIMARY KEY autoincrement,
     created DATETIME DEFAULT TIMESTAMP,
-    status TEXT NOT NULL,
+    status TEXT DEFAULT "waiting",
     user INTEGER,
     activity INTEGER,
     room INTEGER,
@@ -34,4 +34,11 @@ create table participatesIn (
     break INTEGER,
     FOREIGN KEY(user) REFERENCES user(userId),
     FOREIGN KEY(break) REFERENCES break(breakId)
+);
+
+create table activitiesForBreak (
+    break INTEGER,
+    activity INTEGER,
+    FOREIGN KEY (break) REFERENCES break(breakId),
+    FOREIGN KEY (activity) REFERENCES activity(activityId)
 );
