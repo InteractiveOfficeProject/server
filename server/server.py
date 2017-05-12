@@ -114,13 +114,12 @@ def signup_for_break():
     value_break = (userid, 0, 0)
     cur = db.execute(sql_command_break, value_break)
     sql_command_activities = """INSERT INTO activitiesForBreak (break, activity) VALUES (?,?,?)"""
-    sql_command_breakid_search = """select breakId from break where created = (select max(created) from break)"""
+    sql_command_breakid_search = """select max(breakId) from break"""
     cur = db.execute(sql_command_breakid_search)
     breakId = cur.fetchall()[0]["breakId"]
     for activity in activities:
         cur = db.execute(sql_command_activities, (breakId, activity))
     db.commit()
-
 
 
 if __name__ == '__main__':
