@@ -110,9 +110,14 @@ def signup_for_break():
     db = get_db()
     userid = request.args.get('UserID', 'default get')
     activities = request.args.get('ActivityIDs', 'default get')
-    sql_command = """INSERT INTO break (user, activity, room) VALUES (?,?,?)"""
-    value = (userid, 0, 0)
-    cur = db.execute(sql_command, value)
+    sql_command_break = """INSERT INTO break (user, activity, room) VALUES (?,?,?)"""
+    value_break = (userid, 0, 0)
+    cur = db.execute(sql_command_break, value_break)
+    sql_command_activities = """INSERT INTO activitiesForBreak (break, activity) VALUES (?,?,?)"""
+    # find out breakId which got created a few lines back here
+    for activity in activities:
+        cur = db.execute(sql_command_activities, (breakId, activity))
+    db.commit()
 
     # create break here with sql command
 
